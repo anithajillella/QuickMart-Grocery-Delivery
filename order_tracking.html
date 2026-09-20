@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>QuickMart - Order Tracking</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+
+<body>
+
+<header>
+
+    <div class="logo">
+        QuickMart
+    </div>
+
+    <button onclick="goHome()">
+        Home
+    </button>
+
+    <button onclick="goMyOrders()">
+        📦 My Orders
+    </button>
+
+</header>
+
+
+<main>
+
+    <section class="checkout-container">
+
+        <h1>
+            📦 Order Tracking
+        </h1>
+
+        <div id="orderDetails">
+            Loading order...
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+const orderNumber =
+    "{{ order_number }}";
+
+
+async function loadOrder() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/orders/" +
+                encodeURIComponent(orderNumber)
+            );
+
+
+        const result =
+            await response.json();
+
+
+        const container =
+            document.getElementById(
+                "orderDetails"
+            );
+
+
+        if (!response.ok) {
+
+            container.innerHTML = `
+                <p>${result.message}</p>
+            `;
+
+            return;
+        }
+
+
+        const order =
+            result.order;
+
+
+        const statuses = [
+
+            "Order Placed",
+
+            "Confirmed",
+
+            "Preparing",
+
+            "Out for Delivery",
+
+            "Delivered"
+
+        ];
+
+
+        const cancelled =
+            order.status === "Cancelled";
+
+
+        let trackingHTML = "";
+
+
+        if (cancelled) {
+
+            trackingHTML = `
+                <div class="checkout-section">
+
+                    <h2>
+                        ❌ Order Cancelled
+                    </h2>
+
+                    <p>
+                        Order #${order.order_number}
+                    </p>
+
+                </div>
+            `;
+
+        } else {
+
+            const currentIndex =
+                statuses.indexOf(
+                    order.status
+                );
+
+
+            trackingHTML = `
+
+                <div class="checkout-section">
+
+                    <h2>
+                        Order #${order.order_number}
+                    </h2>
+
+                    <p>
+                        Total:
+                        ₹${order.total_amount}
+                    </p>
+
+                    <p>
+                        Current Status:
+                        <strong>
+                            ${order.status}
+                        </strong>
+                    </p>
+
+                </div>
+
+
+                <div class="checkout-section">
+
+                    <h2>
+                        Order Status
+                    </h2>
+
+                    <div>
+
+            `;
+
+
+            statuses.forEach(
+                function(status, index) {
+
+                    let symbol = "⬜";
+
+                    if (
+                        currentIndex >= index
+                    ) {
+                        symbol = "✅";
+                    }
+
+                    trackingHTML += `
+
+                        <div style="
+                            padding: 15px 0;
+                            font-size: 18px;
+                        ">
+
+                            ${symbol}
+
+                            ${status}
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            trackingHTML += `
+
+                    </div>
+
+                </div>
+
+
+                <div class="checkout-section">
+
+                    <h2>
+                        Delivery Address
+                    </h2>
+
+                    <p>
+                        ${order.house},
+                        ${order.street}
+                    </p>
+
+                    <p>
+                        ${order.city}
+                        -
+                        ${order.pincode}
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+
+        container.innerHTML =
+            trackingHTML;
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "orderDetails"
+        ).innerHTML = `
+            <p>
+                Unable to load order.
+            </p>
+        `;
+
+    }
+
+}
+
+
+function goHome() {
+
+    window.location.href = "/";
+
+}
+
+
+function goMyOrders() {
+
+    window.location.href =
+        "/my-orders";
+
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    loadOrder
+);
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>QuickMart - My Orders</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     HEADER
+========================================= -->
+
+<header>
+
+    <div class="logo">
+        QuickMart
+    </div>
+
+
+    <button onclick="goHome()">
+        Home
+    </button>
+
+
+    <button onclick="goProducts()">
+        Products
+    </button>
+
+
+    <button onclick="goCart()">
+        🛒 Cart
+    </button>
+
+
+    <button onclick="goLogout()">
+        Logout
+    </button>
+
+</header>
+
+
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<main>
+
+    <section class="cart-container">
+
+        <h1>
+            📦 My Orders
+        </h1>
+
+
+        <div id="ordersContainer">
+
+            <p>
+                Loading orders...
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+
+<!-- =========================================
+     JAVASCRIPT
+========================================= -->
+
+<script>
+
+
+/* =========================================
+   LOAD MY ORDERS
+========================================= */
+
+async function loadMyOrders() {
+
+    const container =
+        document.getElementById(
+            "ordersContainer"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/my-orders"
+            );
+
+
+        const result =
+            await response.json();
+
+
+        /* -------------------------------------
+           NOT LOGGED IN
+        ------------------------------------- */
+
+        if (response.status === 401) {
+
+            container.innerHTML = `
+
+                <div class="checkout-section">
+
+                    <h2>
+                        Please Login
+                    </h2>
+
+                    <p>
+                        You must be logged in
+                        to view your orders.
+                    </p>
+
+                    <button
+                        onclick="goLogin()"
+                    >
+                        Login
+                    </button>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        /* -------------------------------------
+           OTHER ERROR
+        ------------------------------------- */
+
+        if (!response.ok) {
+
+            container.innerHTML = `
+
+                <div class="checkout-section">
+
+                    <p>
+                        ${result.message}
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        /* -------------------------------------
+           GET ORDERS
+        ------------------------------------- */
+
+        const orders =
+            result.orders || [];
+
+
+        /* -------------------------------------
+           NO ORDERS
+        ------------------------------------- */
+
+        if (orders.length === 0) {
+
+            container.innerHTML = `
+
+                <div class="checkout-section">
+
+                    <h2>
+                        No Orders Yet
+                    </h2>
+
+                    <p>
+                        You haven't placed
+                        any orders yet.
+                    </p>
+
+                    <br>
+
+                    <button
+                        onclick="goProducts()"
+                    >
+                        Start Shopping
+                    </button>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        /* -------------------------------------
+           CLEAR OLD CONTENT
+        ------------------------------------- */
+
+        container.innerHTML = "";
+
+
+        /* -------------------------------------
+           DISPLAY ORDERS
+        ------------------------------------- */
+
+        orders.forEach(
+            function(order) {
+
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "cart-item";
+
+
+                div.innerHTML = `
+
+                    <div
+                        class="cart-item-info"
+                        style="width: 100%;"
+                    >
+
+
+                        <div
+                            class="cart-item-name"
+                        >
+
+                            Order #${order.order_number}
+
+                        </div>
+
+
+                        <div
+                            class="cart-item-price"
+                        >
+
+                            Total:
+                            ₹${order.total_amount}
+
+                        </div>
+
+
+                        <div
+                            style="margin-top: 8px;"
+                        >
+
+                            Status:
+
+                            <strong>
+                                ${order.status}
+                            </strong>
+
+                        </div>
+
+
+                        <div
+                            style="margin-top: 8px;"
+                        >
+
+                            Payment:
+
+                            ${order.payment_method}
+
+                        </div>
+
+
+                        <div
+                            style="margin-top: 8px;"
+                        >
+
+                            Delivery:
+
+                            ${order.city}
+                            -
+                            ${order.pincode}
+
+                        </div>
+
+
+                        <div
+                            style="margin-top: 8px;"
+                        >
+
+                            Date:
+
+                            ${order.created_at}
+
+                        </div>
+
+
+                        <br>
+
+
+                        <button
+                            onclick="trackOrder(
+                                '${order.order_number}'
+                            )"
+                        >
+
+                            📦 Track Order
+
+                        </button>
+
+
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    div
+                );
+
+            }
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "My Orders Error:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="checkout-section">
+
+                <h2>
+                    Error
+                </h2>
+
+                <p>
+                    Unable to load your orders.
+                </p>
+
+                <button
+                    onclick="loadMyOrders()"
+                >
+                    Try Again
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+
+/* =========================================
+   TRACK ORDER
+========================================= */
+
+function trackOrder(orderNumber) {
+
+    window.location.href =
+        "/order-tracking/" +
+        encodeURIComponent(
+            orderNumber
+        );
+
+}
+
+
+
+/* =========================================
+   HOME
+========================================= */
+
+function goHome() {
+
+    window.location.href =
+        "/";
+
+}
+
+
+
+/* =========================================
+   PRODUCTS
+========================================= */
+
+function goProducts() {
+
+    window.location.href =
+        "/products";
+
+}
+
+
+
+/* =========================================
+   CART
+========================================= */
+
+function goCart() {
+
+    window.location.href =
+        "/cart";
+
+}
+
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+function goLogin() {
+
+    window.location.href =
+        "/login";
+
+}
+
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+async function goLogout() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/logout",
+                {
+                    method: "POST"
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (result.success) {
+
+            alert(
+                "Logout successful!"
+            );
+
+
+            window.location.href =
+                "/";
+
+        }
+
+        else {
+
+            alert(
+                result.message ||
+                "Logout failed."
+            );
+
+        }
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Logout Error:",
+            error
+        );
+
+
+        alert(
+            "Unable to logout."
+        );
+
+    }
+
+}
+
+
+
+/* =========================================
+   PAGE LOAD
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadMyOrders();
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>
