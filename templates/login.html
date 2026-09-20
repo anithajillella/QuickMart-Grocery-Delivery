@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>QuickMart - Login</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        QuickMart
+    </div>
+
+    <button onclick="goHome()">
+        Home
+    </button>
+
+    <button onclick="goProducts()">
+        Products
+    </button>
+
+    <button onclick="goRegister()">
+        Register
+    </button>
+
+</header>
+
+
+<main>
+
+    <section class="checkout-container">
+
+        <h1>Login</h1>
+
+        <div class="checkout-section">
+
+            <label for="email">
+                Email
+            </label>
+
+            <input
+                type="text"
+                id="email"
+                placeholder="Enter your email"
+            >
+
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+            >
+
+
+            <button
+                class="place-order-btn"
+                onclick="loginUser()"
+            >
+                Login
+            </button>
+
+
+            <p id="message"></p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+async function loginUser() {
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+
+    // --------------------------------
+    // CHECK EMPTY FIELDS
+    // --------------------------------
+
+    if (!email || !password) {
+
+        document.getElementById("message").textContent =
+            "Please enter email and password.";
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            "/api/login",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    email: email,
+
+                    password: password
+
+                })
+            }
+        );
+
+
+        const result =
+            await response.json();
+
+
+        document.getElementById("message").textContent =
+            result.message;
+
+
+        // --------------------------------
+        // LOGIN SUCCESS
+        // --------------------------------
+
+        if (result.success) {
+
+            alert("Login successful!");
+
+            window.location.href = "/";
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        document.getElementById("message").textContent =
+            "Unable to connect to server.";
+
+    }
+
+}
+
+
+function goHome() {
+
+    window.location.href = "/";
+
+}
+
+
+function goProducts() {
+
+    window.location.href = "/products";
+
+}
+
+
+function goRegister() {
+
+    window.location.href = "/register";
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>QuickMart - My Orders</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+
+<body>
+
+<header>
+
+    <div class="logo">
+        QuickMart
+    </div>
+
+    <button onclick="goHome()">
+        Home
+    </button>
+
+    <button onclick="goProducts()">
+        Products
+    </button>
+
+    <button onclick="goCart()">
+        🛒 Cart
+    </button>
+
+</header>
+
+
+<main>
+
+    <section class="cart-container">
+
+        <h1>
+            📦 My Orders
+        </h1>
+
+        <div id="ordersContainer">
+            Loading orders...
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+async function loadMyOrders() {
+
+    try {
+
+        const response =
+            await fetch("/api/my-orders");
+
+
+        const result =
+            await response.json();
+
+
+        const container =
+            document.getElementById(
+                "ordersContainer"
+            );
+
+
+        if (!response.ok) {
+
+            container.innerHTML = `
+                <p>
+                    ${result.message}
+                </p>
+            `;
+
+            return;
+        }
+
+
+        const orders =
+            result.orders;
+
+
+        if (!orders || orders.length === 0) {
+
+            container.innerHTML = `
+                <p>
+                    You have no orders yet.
+                </p>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML = "";
+
+
+        orders.forEach(function(order) {
+
+            const div =
+                document.createElement("div");
+
+
+            div.className =
+                "cart-item";
+
+
+            div.innerHTML = `
+
+                <div class="cart-item-info">
+
+                    <div class="cart-item-name">
+                        Order #${order.order_number}
+                    </div>
+
+
+                    <div class="cart-item-price">
+                        Total: ₹${order.total_amount}
+                    </div>
+
+
+                    <div>
+                        Status:
+                        <strong>
+                            ${order.status}
+                        </strong>
+                    </div>
+
+
+                    <div>
+                        City:
+                        ${order.city}
+                    </div>
+
+
+                    <br>
+
+
+                    <button
+                        onclick="trackOrder(
+                            '${order.order_number}'
+                        )"
+                    >
+                        Track Order
+                    </button>
+
+                </div>
+
+            `;
+
+
+            container.appendChild(div);
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "My Orders Error:",
+            error
+        );
+
+
+        document.getElementById(
+            "ordersContainer"
+        ).innerHTML = `
+            <p>
+                Unable to load orders.
+            </p>
+        `;
+
+    }
+
+}
+
+
+function trackOrder(orderNumber) {
+
+    window.location.href =
+        "/order-tracking/" +
+        encodeURIComponent(
+            orderNumber
+        );
+
+}
+
+
+function goHome() {
+
+    window.location.href = "/";
+
+}
+
+
+function goProducts() {
+
+    window.location.href = "/products";
+
+}
+
+
+function goCart() {
+
+    window.location.href = "/cart";
+
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    loadMyOrders
+);
+
+</script>
+
+
+</body>
+
+</html>

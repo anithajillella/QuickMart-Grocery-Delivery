@@ -1,0 +1,596 @@
+/* =========================================
+   QUICKMART - GENERAL
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    color: #222;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+header {
+    background: white;
+    min-height: 70px;
+    padding: 15px 30px;
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    border-bottom: 1px solid #ddd;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1f8f3a;
+}
+
+.location {
+    font-size: 15px;
+    color: #555;
+}
+
+/* =========================================
+   SEARCH
+========================================= */
+
+#searchBox,
+#homeSearch {
+    width: 350px;
+    padding: 12px 15px;
+
+    border: 1px solid #ccc;
+    border-radius: 8px;
+
+    font-size: 15px;
+    outline: none;
+}
+
+#searchBox:focus,
+#homeSearch:focus {
+    border-color: #1f8f3a;
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+button {
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+header button {
+    padding: 10px 16px;
+    border-radius: 7px;
+    background: #f1f1f1;
+}
+
+header button:hover {
+    background: #ddd;
+}
+
+/* =========================================
+   MAIN
+========================================= */
+
+main {
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px 20px;
+}
+
+/* =========================================
+   PRODUCTS SECTION
+========================================= */
+
+.products-section h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.products-section > p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* =========================================
+   CATEGORIES
+========================================= */
+
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.categories button {
+    background: white;
+    border: 1px solid #ccc;
+
+    padding: 10px 18px;
+
+    border-radius: 20px;
+
+    transition: 0.2s;
+}
+
+.categories button:hover {
+    background: #1f8f3a;
+    color: white;
+    border-color: #1f8f3a;
+}
+
+/* =========================================
+   PRODUCT CONTAINER
+========================================= */
+
+.product-container {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(210px, 1fr));
+
+    gap: 20px;
+}
+
+/* =========================================
+   PRODUCT CARD
+========================================= */
+
+.product {
+    background: white;
+
+    border: 1px solid #e2e2e2;
+    border-radius: 12px;
+
+    padding: 18px;
+
+    text-align: center;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    transition: 0.2s;
+}
+
+.product:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.12);
+}
+
+/* =========================================
+   PRODUCT EMOJI
+========================================= */
+
+.product-emoji {
+    font-size: 65px;
+    margin-bottom: 15px;
+}
+
+/* =========================================
+   PRODUCT NAME
+========================================= */
+
+.product h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+/* =========================================
+   CATEGORY
+========================================= */
+
+.product-category {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+/* =========================================
+   PRICE
+========================================= */
+
+.product-price {
+    font-size: 19px;
+    font-weight: bold;
+    color: #1f8f3a;
+
+    margin-bottom: 15px;
+}
+
+/* =========================================
+   ADD TO CART
+========================================= */
+
+.add-cart-btn {
+    width: 100%;
+
+    background: #1f8f3a;
+    color: white;
+
+    padding: 11px;
+
+    border-radius: 7px;
+
+    font-weight: bold;
+}
+
+.add-cart-btn:hover {
+    background: #16742d;
+}
+
+/* =========================================
+   NO PRODUCTS
+========================================= */
+
+#noProducts {
+    text-align: center;
+    padding: 40px;
+
+    font-size: 18px;
+    color: #777;
+}
+
+/* =========================================
+   CART
+========================================= */
+
+.cart-container {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 12px;
+}
+
+.cart-container h1 {
+    margin-bottom: 25px;
+}
+
+/* =========================================
+   CART ITEM
+========================================= */
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 15px 0;
+
+    border-bottom: 1px solid #ddd;
+}
+
+.cart-item-info {
+    flex: 1;
+}
+
+.cart-item-name {
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.cart-item-price {
+    color: #1f8f3a;
+    margin-top: 5px;
+}
+
+/* =========================================
+   QUANTITY
+========================================= */
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-controls button {
+    width: 32px;
+    height: 32px;
+
+    border-radius: 5px;
+
+    background: #eee;
+}
+
+.quantity-controls button:hover {
+    background: #ddd;
+}
+
+.quantity {
+    font-weight: bold;
+}
+
+/* =========================================
+   REMOVE BUTTON
+========================================= */
+
+.remove-btn {
+    background: #e53935;
+    color: white;
+
+    padding: 8px 12px;
+
+    border-radius: 5px;
+
+    margin-left: 15px;
+}
+
+.remove-btn:hover {
+    background: #c62828;
+}
+
+/* =========================================
+   EMPTY CART
+========================================= */
+
+#emptyCart {
+    text-align: center;
+
+    padding: 40px;
+
+    color: #777;
+
+    font-size: 18px;
+}
+
+/* =========================================
+   CART SUMMARY
+========================================= */
+
+.cart-summary {
+    margin-top: 30px;
+
+    border-top: 2px solid #eee;
+
+    padding-top: 20px;
+
+    text-align: right;
+}
+
+.cart-summary h3,
+.cart-summary h2 {
+    margin-bottom: 12px;
+}
+
+.cart-summary button {
+    background: #1f8f3a;
+    color: white;
+
+    padding: 13px 25px;
+
+    border-radius: 7px;
+
+    font-weight: bold;
+}
+
+.cart-summary button:hover {
+    background: #16742d;
+}
+
+/* =========================================
+   FOOTER
+========================================= */
+
+footer {
+    text-align: center;
+
+    padding: 25px;
+
+    margin-top: 40px;
+
+    background: white;
+
+    border-top: 1px solid #ddd;
+
+    color: #666;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+    header {
+        flex-wrap: wrap;
+        padding: 15px;
+    }
+
+    #searchBox,
+    #homeSearch {
+        width: 100%;
+    }
+
+    .product-container {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .cart-summary {
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .product-container {
+        grid-template-columns: 1fr;
+    }
+
+    .logo {
+        font-size: 24px;
+    }
+}
+
+/* =========================================
+   CHECKOUT
+========================================= */
+
+.checkout-container {
+    max-width: 900px;
+    margin: auto;
+}
+
+.checkout-container h1 {
+    margin-bottom: 25px;
+}
+
+.checkout-section {
+    background: white;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+}
+
+.checkout-section h2 {
+    margin-bottom: 20px;
+}
+
+.checkout-section label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 7px;
+    font-weight: bold;
+}
+
+.checkout-section input[type="text"],
+.checkout-section input[type="tel"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 15px;
+}
+
+.payment-option {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    font-weight: normal !important;
+    cursor: pointer;
+}
+
+.payment-option input {
+    width: 18px;
+    height: 18px;
+}
+
+.checkout-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.checkout-total {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.checkout-total p {
+    margin-bottom: 10px;
+}
+
+.checkout-total h2 {
+    color: #1f8f3a;
+}
+
+.place-order-btn {
+    width: 100%;
+    padding: 15px;
+
+    background: #1f8f3a;
+    color: white;
+
+    border-radius: 8px;
+
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.place-order-btn:hover {
+    background: #16742d;
+}
+
+/* =========================================
+   ORDER SUCCESS
+========================================= */
+
+.success-container {
+    max-width: 600px;
+    margin: 80px auto;
+
+    background: white;
+
+    padding: 50px 30px;
+
+    text-align: center;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.success-icon {
+    font-size: 70px;
+    margin-bottom: 20px;
+}
+
+.success-container h1 {
+    margin-bottom: 15px;
+}
+
+.success-container p {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.success-container h2 {
+    color: #1f8f3a;
+    margin: 15px 0 25px;
+}
+
+.success-container button {
+    padding: 12px 20px;
+    margin: 5px;
+
+    background: #1f8f3a;
+    color: white;
+
+    border-radius: 7px;
+}
+
+.success-container button:hover {
+    background: #16742d;
+}

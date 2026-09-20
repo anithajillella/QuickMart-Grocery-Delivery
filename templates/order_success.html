@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>QuickMart - Order Success</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <style>
+
+        .success-container {
+            max-width: 700px;
+            margin: 60px auto;
+            padding: 40px 25px;
+            text-align: center;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+        }
+
+        .success-icon {
+            font-size: 70px;
+            margin-bottom: 10px;
+        }
+
+        .success-container h1 {
+            color: #16a34a;
+            margin-bottom: 10px;
+        }
+
+        .success-container p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .order-number-box {
+            margin: 25px 0;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 10px;
+        }
+
+        .order-number-box strong {
+            color: #166534;
+        }
+
+        .success-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .success-buttons a {
+            display: inline-block;
+            padding: 13px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .track-btn {
+            background: #16a34a;
+            color: white;
+        }
+
+        .track-btn:hover {
+            background: #15803d;
+        }
+
+        .orders-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .orders-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .shop-btn {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .shop-btn:hover {
+            background: #d1d5db;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        QuickMart
+    </div>
+
+    <button onclick="window.location.href='/'">
+        Home
+    </button>
+
+    <button onclick="window.location.href='/products'">
+        Products
+    </button>
+
+    <button onclick="window.location.href='/my-orders'">
+        My Orders
+    </button>
+
+</header>
+
+
+<main>
+
+    <section class="success-container">
+
+        <div class="success-icon">
+            ✅
+        </div>
+
+
+        <h1>
+            Order Placed Successfully!
+        </h1>
+
+
+        <p>
+            Thank you for shopping with QuickMart.
+        </p>
+
+
+        {% if order_number %}
+
+        <div class="order-number-box">
+
+            <p>
+                Your Order Number:
+            </p>
+
+            <strong>
+                {{ order_number }}
+            </strong>
+
+        </div>
+
+
+        <div class="success-buttons">
+
+            <!-- TRACK ORDER -->
+
+            <a
+                class="track-btn"
+                href="/order-tracking/{{ order_number }}"
+            >
+                🚚 Track My Order
+            </a>
+
+
+            <!-- MY ORDERS -->
+
+            <a
+                class="orders-btn"
+                href="/my-orders"
+            >
+                📦 My Orders
+            </a>
+
+
+            <!-- CONTINUE SHOPPING -->
+
+            <a
+                class="shop-btn"
+                href="/products"
+            >
+                🛍️ Continue Shopping
+            </a>
+
+        </div>
+
+        {% else %}
+
+        <p>
+            Your order has been placed successfully.
+        </p>
+
+
+        <div class="success-buttons">
+
+            <a
+                class="orders-btn"
+                href="/my-orders"
+            >
+                📦 My Orders
+            </a>
+
+
+            <a
+                class="shop-btn"
+                href="/products"
+            >
+                🛍️ Continue Shopping
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+</main>
+
+
+</body>
+
+</html>
