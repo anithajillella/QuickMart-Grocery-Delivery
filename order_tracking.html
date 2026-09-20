@@ -15,7 +15,6 @@
 
 </head>
 
-
 <body>
 
 <header>
@@ -54,70 +53,53 @@
 
 <script>
 
-const orderNumber =
-    "{{ order_number }}";
+const orderNumber = "{{ order_number }}";
 
 
 async function loadOrder() {
 
     try {
 
-        const response =
-            await fetch(
-                "/api/orders/" +
-                encodeURIComponent(orderNumber)
-            );
+        const response = await fetch(
+            "/api/orders/" +
+            encodeURIComponent(orderNumber)
+        );
 
 
-        const result =
-            await response.json();
+        const result = await response.json();
 
 
         const container =
-            document.getElementById(
-                "orderDetails"
-            );
+            document.getElementById("orderDetails");
 
 
         if (!response.ok) {
 
             container.innerHTML = `
-                <p>${result.message}</p>
+                <div class="checkout-section">
+                    <p>${result.message}</p>
+                </div>
             `;
 
             return;
         }
 
 
-        const order =
-            result.order;
+        const order = result.order;
 
 
         const statuses = [
-
             "Order Placed",
-
             "Confirmed",
-
             "Preparing",
-
             "Out for Delivery",
-
             "Delivered"
-
         ];
 
 
-        const cancelled =
-            order.status === "Cancelled";
+        if (order.status === "Cancelled") {
 
-
-        let trackingHTML = "";
-
-
-        if (cancelled) {
-
-            trackingHTML = `
+            container.innerHTML = `
                 <div class="checkout-section">
 
                     <h2>
@@ -131,124 +113,119 @@ async function loadOrder() {
                 </div>
             `;
 
-        } else {
-
-            const currentIndex =
-                statuses.indexOf(
-                    order.status
-                );
+            return;
+        }
 
 
-            trackingHTML = `
-
-                <div class="checkout-section">
-
-                    <h2>
-                        Order #${order.order_number}
-                    </h2>
-
-                    <p>
-                        Total:
-                        ₹${order.total_amount}
-                    </p>
-
-                    <p>
-                        Current Status:
-                        <strong>
-                            ${order.status}
-                        </strong>
-                    </p>
-
-                </div>
+        const currentIndex =
+            statuses.indexOf(order.status);
 
 
-                <div class="checkout-section">
+        let trackingHTML = `
 
-                    <h2>
-                        Order Status
-                    </h2>
+            <div class="checkout-section">
 
-                    <div>
+                <h2>
+                    Order #${order.order_number}
+                </h2>
 
-            `;
+                <p>
+                    Total:
+                    ₹${order.total_amount}
+                </p>
+
+                <p>
+                    Current Status:
+                    <strong>
+                        ${order.status}
+                    </strong>
+                </p>
+
+            </div>
 
 
-            statuses.forEach(
-                function(status, index) {
+            <div class="checkout-section">
 
-                    let symbol = "⬜";
+                <h2>
+                    Order Status
+                </h2>
 
-                    if (
-                        currentIndex >= index
-                    ) {
-                        symbol = "✅";
-                    }
+        `;
 
-                    trackingHTML += `
 
-                        <div style="
-                            padding: 15px 0;
-                            font-size: 18px;
-                        ">
+        statuses.forEach(function(status, index) {
 
-                            ${symbol}
+            let symbol = "⬜";
 
-                            ${status}
-
-                        </div>
-
-                    `;
-
-                }
-            );
+            if (currentIndex >= index) {
+                symbol = "✅";
+            }
 
 
             trackingHTML += `
 
-                    </div>
+                <div style="
+                    padding: 12px 0;
+                    font-size: 18px;
+                ">
 
-                </div>
-
-
-                <div class="checkout-section">
-
-                    <h2>
-                        Delivery Address
-                    </h2>
-
-                    <p>
-                        ${order.house},
-                        ${order.street}
-                    </p>
-
-                    <p>
-                        ${order.city}
-                        -
-                        ${order.pincode}
-                    </p>
+                    ${symbol}
+                    ${status}
 
                 </div>
 
             `;
 
-        }
+        });
 
 
-        container.innerHTML =
-            trackingHTML;
+        trackingHTML += `
+
+            </div>
+
+
+            <div class="checkout-section">
+
+                <h2>
+                    Delivery Address
+                </h2>
+
+                <p>
+                    ${order.house},
+                    ${order.street}
+                </p>
+
+                <p>
+                    ${order.city}
+                    -
+                    ${order.pincode}
+                </p>
+
+            </div>
+
+        `;
+
+
+        container.innerHTML = trackingHTML;
 
     }
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "Tracking error:",
+            error
+        );
+
 
         document.getElementById(
             "orderDetails"
         ).innerHTML = `
-            <p>
-                Unable to load order.
-            </p>
+            <div class="checkout-section">
+                <p>
+                    Unable to load order.
+                </p>
+            </div>
         `;
 
     }
@@ -265,8 +242,7 @@ function goHome() {
 
 function goMyOrders() {
 
-    window.location.href =
-        "/my-orders";
+    window.location.href = "/my-orders";
 
 }
 

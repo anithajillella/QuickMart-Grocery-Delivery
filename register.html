@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>QuickMart - Register</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        QuickMart
+    </div>
+
+    <button onclick="goHome()">
+        Home
+    </button>
+
+    <button onclick="goProducts()">
+        Products
+    </button>
+
+    <button onclick="goLogin()">
+        Login
+    </button>
+
+</header>
+
+
+<main>
+
+    <section class="checkout-container">
+
+        <h1>Create Account</h1>
+
+        <div class="checkout-section">
+
+            <label for="name">
+                Full Name
+            </label>
+
+            <input
+                type="text"
+                id="name"
+                placeholder="Enter your name"
+            >
+
+
+            <label for="email">
+                Email
+            </label>
+
+            <input
+                type="text"
+                id="email"
+                placeholder="Enter your email"
+            >
+
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter password"
+            >
+
+
+            <button
+                class="place-order-btn"
+                onclick="registerUser()"
+            >
+                Create Account
+            </button>
+
+            <p id="message"></p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+async function registerUser() {
+
+    const name =
+        document.getElementById("name").value.trim();
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+
+    if (!name || !email || !password) {
+
+        document.getElementById("message").textContent =
+            "Please fill all fields.";
+
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            "/api/register",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    name: name,
+
+                    email: email,
+
+                    password: password
+
+                })
+            }
+        );
+
+
+        const result =
+            await response.json();
+
+
+        document.getElementById("message").textContent =
+            result.message;
+
+
+        if (result.success) {
+
+            alert("Registration successful!");
+
+            window.location.href = "/login";
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        document.getElementById("message").textContent =
+            "Unable to connect to server.";
+
+    }
+
+}
+
+
+function goHome() {
+
+    window.location.href = "/";
+
+}
+
+
+function goProducts() {
+
+    window.location.href = "/products";
+
+}
+
+
+function goLogin() {
+
+    window.location.href = "/login";
+
+}
+
+</script>
+
+</body>
+
+</html>

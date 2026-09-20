@@ -18,44 +18,26 @@
 
 <body>
 
-
-<!-- =========================================
-     HEADER
-========================================= -->
-
 <header>
 
     <div class="logo">
         QuickMart
     </div>
 
-
     <button onclick="goHome()">
         Home
     </button>
-
 
     <button onclick="goProducts()">
         Products
     </button>
 
-
     <button onclick="goCart()">
         🛒 Cart
     </button>
 
-
-    <button onclick="goLogout()">
-        Logout
-    </button>
-
 </header>
 
-
-
-<!-- =========================================
-     MAIN
-========================================= -->
 
 <main>
 
@@ -65,13 +47,8 @@
             📦 My Orders
         </h1>
 
-
         <div id="ordersContainer">
-
-            <p>
-                Loading orders...
-            </p>
-
+            Loading orders...
         </div>
 
     </section>
@@ -79,267 +56,116 @@
 </main>
 
 
-
-<!-- =========================================
-     JAVASCRIPT
-========================================= -->
-
 <script>
 
-
-/* =========================================
-   LOAD MY ORDERS
-========================================= */
-
 async function loadMyOrders() {
-
-    const container =
-        document.getElementById(
-            "ordersContainer"
-        );
-
 
     try {
 
         const response =
-            await fetch(
-                "/api/my-orders"
-            );
+            await fetch("/api/my-orders");
 
 
         const result =
             await response.json();
 
 
-        /* -------------------------------------
-           NOT LOGGED IN
-        ------------------------------------- */
+        const container =
+            document.getElementById(
+                "ordersContainer"
+            );
 
-        if (response.status === 401) {
-
-            container.innerHTML = `
-
-                <div class="checkout-section">
-
-                    <h2>
-                        Please Login
-                    </h2>
-
-                    <p>
-                        You must be logged in
-                        to view your orders.
-                    </p>
-
-                    <button
-                        onclick="goLogin()"
-                    >
-                        Login
-                    </button>
-
-                </div>
-
-            `;
-
-            return;
-
-        }
-
-
-        /* -------------------------------------
-           OTHER ERROR
-        ------------------------------------- */
 
         if (!response.ok) {
 
             container.innerHTML = `
-
-                <div class="checkout-section">
-
-                    <p>
-                        ${result.message}
-                    </p>
-
-                </div>
-
+                <p>
+                    ${result.message}
+                </p>
             `;
 
             return;
-
         }
 
 
-        /* -------------------------------------
-           GET ORDERS
-        ------------------------------------- */
-
         const orders =
-            result.orders || [];
+            result.orders;
 
 
-        /* -------------------------------------
-           NO ORDERS
-        ------------------------------------- */
-
-        if (orders.length === 0) {
+        if (!orders || orders.length === 0) {
 
             container.innerHTML = `
+                <p>
+                    You have no orders yet.
+                </p>
+            `;
 
-                <div class="checkout-section">
+            return;
+        }
 
-                    <h2>
-                        No Orders Yet
-                    </h2>
 
-                    <p>
-                        You haven't placed
-                        any orders yet.
-                    </p>
+        container.innerHTML = "";
+
+
+        orders.forEach(function(order) {
+
+            const div =
+                document.createElement("div");
+
+
+            div.className =
+                "cart-item";
+
+
+            div.innerHTML = `
+
+                <div class="cart-item-info">
+
+                    <div class="cart-item-name">
+                        Order #${order.order_number}
+                    </div>
+
+
+                    <div class="cart-item-price">
+                        Total: ₹${order.total_amount}
+                    </div>
+
+
+                    <div>
+                        Status:
+                        <strong>
+                            ${order.status}
+                        </strong>
+                    </div>
+
+
+                    <div>
+                        City:
+                        ${order.city}
+                    </div>
+
 
                     <br>
 
+
                     <button
-                        onclick="goProducts()"
+                        onclick="trackOrder(
+                            '${order.order_number}'
+                        )"
                     >
-                        Start Shopping
+                        Track Order
                     </button>
 
                 </div>
 
             `;
 
-            return;
 
-        }
+            container.appendChild(div);
 
-
-        /* -------------------------------------
-           CLEAR OLD CONTENT
-        ------------------------------------- */
-
-        container.innerHTML = "";
-
-
-        /* -------------------------------------
-           DISPLAY ORDERS
-        ------------------------------------- */
-
-        orders.forEach(
-            function(order) {
-
-
-                const div =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                div.className =
-                    "cart-item";
-
-
-                div.innerHTML = `
-
-                    <div
-                        class="cart-item-info"
-                        style="width: 100%;"
-                    >
-
-
-                        <div
-                            class="cart-item-name"
-                        >
-
-                            Order #${order.order_number}
-
-                        </div>
-
-
-                        <div
-                            class="cart-item-price"
-                        >
-
-                            Total:
-                            ₹${order.total_amount}
-
-                        </div>
-
-
-                        <div
-                            style="margin-top: 8px;"
-                        >
-
-                            Status:
-
-                            <strong>
-                                ${order.status}
-                            </strong>
-
-                        </div>
-
-
-                        <div
-                            style="margin-top: 8px;"
-                        >
-
-                            Payment:
-
-                            ${order.payment_method}
-
-                        </div>
-
-
-                        <div
-                            style="margin-top: 8px;"
-                        >
-
-                            Delivery:
-
-                            ${order.city}
-                            -
-                            ${order.pincode}
-
-                        </div>
-
-
-                        <div
-                            style="margin-top: 8px;"
-                        >
-
-                            Date:
-
-                            ${order.created_at}
-
-                        </div>
-
-
-                        <br>
-
-
-                        <button
-                            onclick="trackOrder(
-                                '${order.order_number}'
-                            )"
-                        >
-
-                            📦 Track Order
-
-                        </button>
-
-
-                    </div>
-
-                `;
-
-
-                container.appendChild(
-                    div
-                );
-
-            }
-        );
+        });
 
     }
-
 
     catch (error) {
 
@@ -349,37 +175,18 @@ async function loadMyOrders() {
         );
 
 
-        container.innerHTML = `
-
-            <div class="checkout-section">
-
-                <h2>
-                    Error
-                </h2>
-
-                <p>
-                    Unable to load your orders.
-                </p>
-
-                <button
-                    onclick="loadMyOrders()"
-                >
-                    Try Again
-                </button>
-
-            </div>
-
+        document.getElementById(
+            "ordersContainer"
+        ).innerHTML = `
+            <p>
+                Unable to load orders.
+            </p>
         `;
 
     }
 
 }
 
-
-
-/* =========================================
-   TRACK ORDER
-========================================= */
 
 function trackOrder(orderNumber) {
 
@@ -392,133 +199,30 @@ function trackOrder(orderNumber) {
 }
 
 
-
-/* =========================================
-   HOME
-========================================= */
-
 function goHome() {
 
-    window.location.href =
-        "/";
+    window.location.href = "/";
 
 }
 
-
-
-/* =========================================
-   PRODUCTS
-========================================= */
 
 function goProducts() {
 
-    window.location.href =
-        "/products";
+    window.location.href = "/products";
 
 }
 
-
-
-/* =========================================
-   CART
-========================================= */
 
 function goCart() {
 
-    window.location.href =
-        "/cart";
+    window.location.href = "/cart";
 
 }
 
-
-
-/* =========================================
-   LOGIN
-========================================= */
-
-function goLogin() {
-
-    window.location.href =
-        "/login";
-
-}
-
-
-
-/* =========================================
-   LOGOUT
-========================================= */
-
-async function goLogout() {
-
-    try {
-
-        const response =
-            await fetch(
-                "/api/logout",
-                {
-                    method: "POST"
-                }
-            );
-
-
-        const result =
-            await response.json();
-
-
-        if (result.success) {
-
-            alert(
-                "Logout successful!"
-            );
-
-
-            window.location.href =
-                "/";
-
-        }
-
-        else {
-
-            alert(
-                result.message ||
-                "Logout failed."
-            );
-
-        }
-
-    }
-
-
-    catch (error) {
-
-        console.error(
-            "Logout Error:",
-            error
-        );
-
-
-        alert(
-            "Unable to logout."
-        );
-
-    }
-
-}
-
-
-
-/* =========================================
-   PAGE LOAD
-========================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
-    function() {
-
-        loadMyOrders();
-
-    }
+    loadMyOrders
 );
 
 </script>

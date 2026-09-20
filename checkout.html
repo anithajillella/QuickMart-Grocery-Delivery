@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>QuickMart - Checkout</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <style>
+
+        /* =========================================
+           DEMO PAYMENT MODAL
+        ========================================= */
+
+        .demo-payment-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .demo-payment-modal {
+            width: min(430px, 100%);
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
+        }
+
+        .demo-payment-modal h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .demo-payment-note {
+            margin-bottom: 20px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-size: 14px;
+        }
+
+        .demo-payment-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 18px 0;
+            padding: 14px;
+            border-radius: 8px;
+            background: #f3f4f6;
+            font-size: 18px;
+        }
+
+        .demo-payment-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .demo-payment-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .demo-pay-btn {
+            background: #16a34a;
+            color: white;
+        }
+
+        .demo-pay-btn:hover {
+            background: #15803d;
+        }
+
+        .demo-cancel-btn {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .demo-cancel-btn:hover {
+            background: #d1d5db;
+        }
+
+        .demo-payment-status {
+            min-height: 22px;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        QuickMart
+    </div>
+
+    <button onclick="goHome()">
+        Home
+    </button>
+
+    <button onclick="goProducts()">
+        Products
+    </button>
+
+    <button onclick="window.location.href='/cart'">
+        🛒 Cart
+    </button>
+
+</header>
+
+
+<main>
+
+    <section class="checkout-container">
+
+        <h1>Checkout</h1>
+
+
+        <!-- =========================================
+             DELIVERY ADDRESS
+        ========================================== -->
+
+        <div class="checkout-section">
+
+            <h2>📍 Delivery Address</h2>
+
+            <label for="fullName">
+                Full Name
+            </label>
+
+            <input
+                type="text"
+                id="fullName"
+                placeholder="Enter your full name"
+                autocomplete="name"
+            >
+
+
+            <label for="mobile">
+                Mobile Number
+            </label>
+
+            <input
+                type="tel"
+                id="mobile"
+                placeholder="Enter 10-digit mobile number"
+                maxlength="10"
+                inputmode="numeric"
+                autocomplete="tel"
+            >
+
+
+            <label for="house">
+                House / Flat Number
+            </label>
+
+            <input
+                type="text"
+                id="house"
+                placeholder="Enter house / flat number"
+            >
+
+
+            <label for="street">
+                Street / Area
+            </label>
+
+            <input
+                type="text"
+                id="street"
+                placeholder="Enter street / area"
+            >
+
+
+            <label for="city">
+                City
+            </label>
+
+            <input
+                type="text"
+                id="city"
+                placeholder="Enter city"
+                autocomplete="address-level2"
+            >
+
+
+            <label for="pincode">
+                Pincode
+            </label>
+
+            <input
+                type="text"
+                id="pincode"
+                placeholder="Enter 6-digit pincode"
+                maxlength="6"
+                inputmode="numeric"
+                autocomplete="postal-code"
+            >
+
+        </div>
+
+
+        <!-- =========================================
+             PAYMENT METHOD
+        ========================================== -->
+
+        <div class="checkout-section">
+
+            <h2>💳 Payment Method</h2>
+
+            <label class="payment-option">
+
+                <input
+                    type="radio"
+                    name="payment"
+                    value="COD"
+                    checked
+                >
+
+                Cash on Delivery
+
+            </label>
+
+
+            <br>
+
+
+            <label class="payment-option">
+
+                <input
+                    type="radio"
+                    name="payment"
+                    value="ONLINE"
+                >
+
+                Demo Online Payment
+
+                <small
+                    style="
+                        display: block;
+                        margin-left: 24px;
+                        margin-top: 4px;
+                        color: #6b7280;
+                    "
+                >
+                    No real money is charged.
+                    This is a project demo payment.
+                </small>
+
+            </label>
+
+        </div>
+
+
+        <!-- =========================================
+             ORDER SUMMARY
+        ========================================== -->
+
+        <div class="checkout-section">
+
+            <h2>🛍️ Order Summary</h2>
+
+            <div id="checkoutItems">
+            </div>
+
+
+            <div class="checkout-total">
+
+                <p>
+                    Subtotal:
+                    ₹<span id="checkoutSubtotal">0.00</span>
+                </p>
+
+
+                <p>
+                    Delivery Fee:
+                    ₹<span id="checkoutDelivery">20.00</span>
+                </p>
+
+
+                <h2>
+                    Total:
+                    ₹<span id="checkoutTotal">0.00</span>
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             PAYMENT MESSAGE
+        ========================================== -->
+
+        <p
+            id="paymentMessage"
+            style="font-weight: bold; margin-top: 15px;"
+        ></p>
+
+
+        <!-- =========================================
+             PLACE ORDER
+        ========================================== -->
+
+        <button
+            class="place-order-btn"
+            id="placeOrderButton"
+            onclick="placeOrder()"
+        >
+            Place Order
+        </button>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================
+     DEMO PAYMENT MODAL
+========================================= -->
+
+<div
+    class="demo-payment-overlay"
+    id="demoPaymentOverlay"
+>
+
+    <div class="demo-payment-modal">
+
+        <h2>🔒 QuickMart Demo Payment</h2>
+
+        <p>
+            Complete this simulated payment to place your order.
+        </p>
+
+        <div class="demo-payment-note">
+            Demo mode: no real money will be charged.
+        </div>
+
+
+        <div class="demo-payment-total">
+
+            <span>
+                Total Amount
+            </span>
+
+            <strong>
+                ₹<span id="demoPaymentAmount">0.00</span>
+            </strong>
+
+        </div>
+
+
+        <p
+            id="demoPaymentStatus"
+            class="demo-payment-status"
+        ></p>
+
+
+        <div class="demo-payment-actions">
+
+            <button
+                type="button"
+                class="demo-cancel-btn"
+                id="demoCancelButton"
+                onclick="closeDemoPayment()"
+            >
+                Cancel
+            </button>
+
+
+            <button
+                type="button"
+                class="demo-pay-btn"
+                id="demoPayButton"
+                onclick="confirmDemoPayment()"
+            >
+                Pay Now
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script
+    src="{{ url_for('static', filename='js/script.js') }}"
+></script>
+
+
+<script>
+
+/* =====================================================
+   GLOBAL VARIABLE
+===================================================== */
+
+let pendingDemoPayment = null;
+
+
+/* =====================================================
+   PAGE LOAD
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        loadCheckout();
+
+    }
+);
+
+
+/* =====================================================
+   LOAD CHECKOUT
+===================================================== */
+
+function loadCheckout() {
+
+    const cart = getCart();
+
+    const container =
+        document.getElementById("checkoutItems");
+
+    const button =
+        document.getElementById("placeOrderButton");
+
+    let subtotal = 0;
+
+
+    if (
+        !Array.isArray(cart) ||
+        cart.length === 0
+    ) {
+
+        container.innerHTML =
+            "<p>Your cart is empty.</p>";
+
+        button.disabled = true;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    cart.forEach(function (item) {
+
+        const price =
+            Number(item.price);
+
+        const quantity =
+            Number(item.quantity);
+
+        const itemTotal =
+            price * quantity;
+
+
+        subtotal += itemTotal;
+
+
+        const div =
+            document.createElement("div");
+
+
+        div.className =
+            "checkout-item";
+
+
+        div.innerHTML = `
+
+            <span>
+                ${escapeHtml(item.name)}
+                × ${quantity}
+            </span>
+
+            <strong>
+                ₹${itemTotal.toFixed(2)}
+            </strong>
+
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
+
+    const deliveryFee = 20;
+
+    const total =
+        subtotal + deliveryFee;
+
+
+    document.getElementById(
+        "checkoutSubtotal"
+    ).textContent =
+        subtotal.toFixed(2);
+
+
+    document.getElementById(
+        "checkoutDelivery"
+    ).textContent =
+        deliveryFee.toFixed(2);
+
+
+    document.getElementById(
+        "checkoutTotal"
+    ).textContent =
+        total.toFixed(2);
+
+}
+
+
+/* =====================================================
+   PLACE ORDER
+===================================================== */
+
+async function placeOrder() {
+
+    const name =
+        document
+            .getElementById("fullName")
+            .value
+            .trim();
+
+
+    const mobile =
+        document
+            .getElementById("mobile")
+            .value
+            .trim();
+
+
+    const house =
+        document
+            .getElementById("house")
+            .value
+            .trim();
+
+
+    const street =
+        document
+            .getElementById("street")
+            .value
+            .trim();
+
+
+    const city =
+        document
+            .getElementById("city")
+            .value
+            .trim();
+
+
+    const pincode =
+        document
+            .getElementById("pincode")
+            .value
+            .trim();
+
+
+    const paymentElement =
+        document.querySelector(
+            'input[name="payment"]:checked'
+        );
+
+
+    const cart =
+        getCart();
+
+
+    const button =
+        document.getElementById(
+            "placeOrderButton"
+        );
+
+
+    const message =
+        document.getElementById(
+            "paymentMessage"
+        );
+
+
+    /* -----------------------------------------
+       VALIDATE ADDRESS
+    ----------------------------------------- */
+
+    if (
+        name === "" ||
+        mobile === "" ||
+        house === "" ||
+        street === "" ||
+        city === "" ||
+        pincode === ""
+    ) {
+
+        message.textContent =
+            "Please fill all delivery details.";
+
+        message.style.color =
+            "red";
+
+        return;
+    }
+
+
+    /* -----------------------------------------
+       VALIDATE MOBILE
+    ----------------------------------------- */
+
+    if (
+        !/^[0-9]{10}$/.test(mobile)
+    ) {
+
+        message.textContent =
+            "Please enter a valid 10-digit mobile number.";
+
+        message.style.color =
+            "red";
+
+        return;
+    }
+
+
+    /* -----------------------------------------
+       VALIDATE PINCODE
+    ----------------------------------------- */
+
+    if (
+        !/^[0-9]{6}$/.test(pincode)
+    ) {
+
+        message.textContent =
+            "Please enter a valid 6-digit pincode.";
+
+        message.style.color =
+            "red";
+
+        return;
+    }
+
+
+    /* -----------------------------------------
+       VALIDATE CART
+    ----------------------------------------- */
+
+    if (
+        !Array.isArray(cart) ||
+        cart.length === 0
+    ) {
+
+        message.textContent =
+            "Your cart is empty.";
+
+        message.style.color =
+            "red";
+
+        return;
+    }
+
+
+    /* -----------------------------------------
+       VALIDATE PAYMENT
+    ----------------------------------------- */
+
+    if (!paymentElement) {
+
+        message.textContent =
+            "Please select a payment method.";
+
+        message.style.color =
+            "red";
+
+        return;
+    }
+
+
+    try {
+
+        button.disabled = true;
+
+        button.textContent =
+            "Processing...";
+
+        message.textContent = "";
+
+        message.style.color = "";
+
+
+        /* =====================================
+           CASH ON DELIVERY
+        ===================================== */
+
+        if (
+            paymentElement.value === "COD"
+        ) {
+
+            await placeCashOnDeliveryOrder(
+                name,
+                mobile,
+                house,
+                street,
+                city,
+                pincode,
+                cart
+            );
+
+            return;
+        }
+
+
+        /* =====================================
+           DEMO ONLINE PAYMENT
+        ===================================== */
+
+        if (
+            paymentElement.value === "ONLINE"
+        ) {
+
+            openDemoPayment(
+                name,
+                mobile,
+                house,
+                street,
+                city,
+                pincode,
+                cart
+            );
+
+            return;
+        }
+
+
+        throw new Error(
+            "Invalid payment method."
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Checkout Error:",
+            error
+        );
+
+
+        button.disabled = false;
+
+        button.textContent =
+            "Place Order";
+
+
+        message.textContent =
+            error.message ||
+            "Unable to process your order.";
+
+        message.style.color =
+            "red";
+
+    }
+
+}
+
+
+/* =====================================================
+   CASH ON DELIVERY
+===================================================== */
+
+async function placeCashOnDeliveryOrder(
+    name,
+    mobile,
+    house,
+    street,
+    city,
+    pincode,
+    cart
+) {
+
+    const response =
+        await fetch(
+            "/api/orders",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify({
+
+                        customer_name:
+                            name,
+
+                        mobile:
+                            mobile,
+
+                        house:
+                            house,
+
+                        street:
+                            street,
+
+                        city:
+                            city,
+
+                        pincode:
+                            pincode,
+
+                        payment_method:
+                            "Cash on Delivery",
+
+                        cart:
+                            cart
+
+                    })
+            }
+        );
+
+
+    const result =
+        await readJsonResponse(
+            response
+        );
+
+
+    if (
+        response.status === 401
+    ) {
+
+        alert(
+            "Please login before placing an order."
+        );
+
+        window.location.href =
+            "/login";
+
+        return;
+    }
+
+
+    if (
+        !response.ok ||
+        !result.success
+    ) {
+
+        throw new Error(
+            result.message ||
+            "Unable to place COD order."
+        );
+
+    }
+
+
+    localStorage.setItem(
+        "quickmartLastOrder",
+        JSON.stringify(result)
+    );
+
+
+    localStorage.removeItem(
+        "quickmartCart"
+    );
+
+
+    window.location.href =
+        "/order-success?order=" +
+        encodeURIComponent(
+            result.order_number
+        );
+
+}
+
+
+/* =====================================================
+   OPEN DEMO PAYMENT
+===================================================== */
+
+function openDemoPayment(
+    name,
+    mobile,
+    house,
+    street,
+    city,
+    pincode,
+    cart
+) {
+
+    const total =
+        Number(
+            document.getElementById(
+                "checkoutTotal"
+            ).textContent
+        );
+
+
+    pendingDemoPayment = {
+
+        name:
+            name,
+
+        mobile:
+            mobile,
+
+        house:
+            house,
+
+        street:
+            street,
+
+        city:
+            city,
+
+        pincode:
+            pincode,
+
+        cart:
+            cart,
+
+        total:
+            total
+
+    };
+
+
+    document.getElementById(
+        "demoPaymentAmount"
+    ).textContent =
+        total.toFixed(2);
+
+
+    document.getElementById(
+        "demoPaymentStatus"
+    ).textContent =
+        "";
+
+
+    document.getElementById(
+        "demoPayButton"
+    ).disabled =
+        false;
+
+
+    document.getElementById(
+        "demoCancelButton"
+    ).disabled =
+        false;
+
+
+    document.getElementById(
+        "demoPaymentOverlay"
+    ).style.display =
+        "flex";
+
+}
+
+
+/* =====================================================
+   CLOSE DEMO PAYMENT
+===================================================== */
+
+function closeDemoPayment() {
+
+    pendingDemoPayment =
+        null;
+
+
+    document.getElementById(
+        "demoPaymentOverlay"
+    ).style.display =
+        "none";
+
+
+    const button =
+        document.getElementById(
+            "placeOrderButton"
+        );
+
+
+    button.disabled =
+        false;
+
+
+    button.textContent =
+        "Place Order";
+
+
+    const message =
+        document.getElementById(
+            "paymentMessage"
+        );
+
+
+    message.textContent =
+        "Demo payment cancelled.";
+
+    message.style.color =
+        "#b45309";
+
+}
+
+
+/* =====================================================
+   CONFIRM DEMO PAYMENT
+===================================================== */
+
+async function confirmDemoPayment() {
+
+    if (!pendingDemoPayment) {
+        return;
+    }
+
+
+    const payButton =
+        document.getElementById(
+            "demoPayButton"
+        );
+
+
+    const cancelButton =
+        document.getElementById(
+            "demoCancelButton"
+        );
+
+
+    const status =
+        document.getElementById(
+            "demoPaymentStatus"
+        );
+
+
+    const mainButton =
+        document.getElementById(
+            "placeOrderButton"
+        );
+
+
+    try {
+
+        payButton.disabled =
+            true;
+
+        cancelButton.disabled =
+            true;
+
+
+        status.textContent =
+            "Processing demo payment...";
+
+        status.style.color =
+            "#2563eb";
+
+
+        /* Simulated payment delay */
+
+        await new Promise(
+            function (resolve) {
+
+                setTimeout(
+                    resolve,
+                    900
+                );
+
+            }
+        );
+
+
+        const response =
+            await fetch(
+                "/api/payment/demo",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            customer_name:
+                                pendingDemoPayment.name,
+
+                            mobile:
+                                pendingDemoPayment.mobile,
+
+                            house:
+                                pendingDemoPayment.house,
+
+                            street:
+                                pendingDemoPayment.street,
+
+                            city:
+                                pendingDemoPayment.city,
+
+                            pincode:
+                                pendingDemoPayment.pincode,
+
+                            cart:
+                                pendingDemoPayment.cart
+
+                        })
+                }
+            );
+
+
+        const result =
+            await readJsonResponse(
+                response
+            );
+
+
+        if (
+            response.status === 401
+        ) {
+
+            alert(
+                "Please login before making payment."
+            );
+
+            window.location.href =
+                "/login";
+
+            return;
+        }
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            throw new Error(
+                result.message ||
+                "Demo payment failed."
+            );
+
+        }
+
+
+        status.textContent =
+            "Payment successful!";
+
+        status.style.color =
+            "green";
+
+
+        /* Save latest order */
+
+        localStorage.setItem(
+            "quickmartLastOrder",
+            JSON.stringify(result)
+        );
+
+
+        /* Clear cart */
+
+        localStorage.removeItem(
+            "quickmartCart"
+        );
+
+
+        /* Hide modal */
+
+        await new Promise(
+            function (resolve) {
+
+                setTimeout(
+                    resolve,
+                    500
+                );
+
+            }
+        );
+
+
+        /* Success page */
+
+        window.location.href =
+            "/order-success?order=" +
+            encodeURIComponent(
+                result.order_number
+            );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Demo Payment Error:",
+            error
+        );
+
+
+        payButton.disabled =
+            false;
+
+
+        cancelButton.disabled =
+            false;
+
+
+        mainButton.disabled =
+            false;
+
+
+        mainButton.textContent =
+            "Place Order";
+
+
+        status.textContent =
+            error.message ||
+            "Demo payment failed.";
+
+        status.style.color =
+            "red";
+
+    }
+
+}
+
+
+/* =====================================================
+   SAFE JSON RESPONSE
+===================================================== */
+
+async function readJsonResponse(
+    response
+) {
+
+    try {
+
+        return await response.json();
+
+    }
+    catch (error) {
+
+        throw new Error(
+            "The server returned an invalid response."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+function goHome() {
+
+    window.location.href =
+        "/";
+
+}
+
+
+function goProducts() {
+
+    window.location.href =
+        "/products";
+
+}
+
+</script>
+
+
+</body>
+
+</html>
